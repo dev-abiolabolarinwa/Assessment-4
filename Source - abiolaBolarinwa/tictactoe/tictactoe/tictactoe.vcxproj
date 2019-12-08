@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Computer_Ai.cpp" />
     <ClCompile Include="GameClass.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -161,6 +162,7 @@
     <ClCompile Include="tictactoe.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Computer_Ai.h" />
     <ClInclude Include="GameClass.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
