@@ -32,27 +32,23 @@ int Computer_Ai::minimax(char board_game[3][3], int tree_depth, bool min_or_max,
 		return 0;
 	}
 
-	if (!min_or_max) {
-		int best_move = 1000;
+	int best_move = -1000;
 
-		int index_pos = 0;
+	int index_pos = 0;
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (board_game[i][j] == board_index[index_pos]) {
-					board_game[i][j] = '0';
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (board_game[i][j] == board_index[index_pos]) {
+				board_game[i][j] = '0';
 
-					best_move = std::max(best_move, minimax(board_game, tree_depth + 1, !min_or_max, board_index));
+				best_move = std::max(best_move, minimax(board_game, tree_depth + 1, !min_or_max, board_index));
 
-					board_game[i][j] = board_index[index_pos];
-				}
-				index_pos++;
+				board_game[i][j] = board_index[index_pos];
 			}
+			index_pos++;
 		}
-		return best_move;
 	}
-
-	return 0;
+	return best_move;
 }
 
 int Computer_Ai::evaluate_winner(char board_game[3][3]) {
@@ -114,20 +110,16 @@ void Computer_Ai::best_move(char board_game[3][3], char board_index[9]) {
 	int index_pos = 0;
 	int best_move = -1000;
 
-	this->comp_row = 1;
-	this->comp_column = -1;
-
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			if (board_game[i][j] == board_index[index_pos]) {
 				board_game[i][j] = '0';
 
-				int move = minimax(board_game, 0, false, board_index);
+				int move = minimax(board_game, 0, true, board_index);
 
 				board_game[i][j] = board_index[index_pos];
 
-				if (move > best_move)
-				{
+				if (move > best_move) {
 					this->comp_row = i;
 					this->comp_column = j;
 					best_move = move;

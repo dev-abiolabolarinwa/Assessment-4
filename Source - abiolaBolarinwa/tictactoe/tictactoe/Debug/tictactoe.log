@@ -1,2 +1,6 @@
-﻿  tictactoe.cpp
+﻿  GameClass.cpp
+  tictactoe.cpp
+C:\Users\Abiola Bolarinwa\source\repos\Learning\assessment 4\Assessment-4\Source - abiolaBolarinwa\tictactoe\tictactoe\tictactoe.cpp(179,21): warning C4244: '=': conversion from 'std::streamoff' to 'int', possible loss of data
+  Generating Code...
+C:\Users\Abiola Bolarinwa\source\repos\Learning\assessment 4\Assessment-4\Source - abiolaBolarinwa\tictactoe\tictactoe\tictactoe.cpp(250,21): warning C4244: '=': conversion from 'std::streamoff' to 'int', possible loss of data
   tictactoe.vcxproj -> C:\Users\Abiola Bolarinwa\source\repos\Learning\assessment 4\Assessment-4\Source - abiolaBolarinwa\tictactoe\Debug\tictactoe.exe

@@ -1,8 +1,8 @@
 #pragma once
 class Computer_Ai {
 	private:
-		int comp_column;
-		int comp_row;
+		int comp_column = -1;
+		int comp_row = -1;
 	public:
 		bool check_moves(char board_game[3][3], char board_index[9]);
 
