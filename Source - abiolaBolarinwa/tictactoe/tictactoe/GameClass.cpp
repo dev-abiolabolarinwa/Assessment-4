@@ -4,20 +4,29 @@
 
 #include <iostream>
 #include <conio.h>
+#include <chrono>
+#include <thread>
 #include <fstream>
 #include <string>
 
 using namespace std;
 
+// Initialises the variables.
 GameClass::GameClass() {
 	this->player_one = 'X';
 	this->player_two = 'O';
 	this->player_computer = '0';
+	this->player_computer_two = 'X';
 }
 
+// Prints the game board to the screen.
 void GameClass::display_board() {
 	system("cls");
-	std::cout << "   Please Press [ R ] to Restart Game !   " << std::endl;
+
+	if (!this->player_computers_play) {
+		std::cout << "   Please Press [ R ] to Restart Game !   " << std::endl;
+	}
+	
 	std::cout << " _________________________________________" << std::endl;
 	std::cout << "|                                         |" << std::endl;
 	std::cout << "|      " << this->board_game[0][0] << "      |      " << this->board_game[0][1] << "      |      " << this->board_game[0][2] << "      |" << std::endl;
@@ -26,21 +35,45 @@ void GameClass::display_board() {
 	std::cout << "|                                         |" << std::endl;
 	std::cout << "|      " << this->board_game[2][0] << "      |      " << this->board_game[2][1] << "      |      " << this->board_game[2][2] << "      |" << std::endl;
 	std::cout << "|_________________________________________|" << std::endl;
-	std::cout << std::endl << "Please Press [ Q ] to Return to Main Menu !" << std::endl;
+
+	if (!this->player_computers_play == true) {
+		std::cout << std::endl << "Please Press [ Q ] to Return to Main Menu !" << std::endl;
+	}
+	
 }
 
+// Gets player's input does a series of checks
+// then saves the correct players input onto the
+// board.
 void GameClass::player_input(char player_symbol) {
 	char condition;
+	bool broken = false;
 
 	std::cout << "Please select one of the following conditions from A - I that have not been selected: ";
-	std::cin >> condition;
+	condition = _getch();
 
-	while (!cin) {
+	for (int i = 0; i < 9; i++) {
+		if (toupper(condition) != this->letter_array[i]) {
+			broken = true;
+		}
+		else {
+			broken = false;
+			break;
+		}
+	}
+
+	while (broken) {
 		std::cin.clear();
 		std::cin.ignore(100, '\n');
 		std::cout << "[ System Message ] [ Please enter a letter from A - Z ]" << std::endl << std::endl;
 		std::cout << "Please select one of the following conditions from A - I that have not been selected: ";
-		std::cin >> condition;
+		condition = _getch();
+
+		for (int i = 0; i < 9; i++) {
+			if (toupper(condition) == this->letter_array[i]) {
+				broken = false;
+			}
+		}
 	}
 
 	bool wrong_input = true;
@@ -48,6 +81,7 @@ void GameClass::player_input(char player_symbol) {
 	for (int i = 0; i < 9; i++) {
 		if (toupper(condition) == this->letter_array[i]) {
 			wrong_input = false;
+			break;
 		}
 
 		if (toupper(condition) == 'R') {
@@ -89,22 +123,29 @@ void GameClass::player_input(char player_symbol) {
 	}
 }
 
+// Checks for the winner of the game, then calls
+// the function to save the users to the file.
 void GameClass::evaluate_winners(string check_turn, bool two_player, int comp_wins_loses[2], int player_one_history[2], int player_two_history[2]) {
 	if (check_turn == "player_computer") {
-		std::cout << "[ System Message ] [ Computer has won! ]" << std::endl;
+		system("CLS");
+		std::cout << "[ System Message ] [ Computer has won! ]" << std::endl << std::endl;
 		save_game_history("player_computer", comp_wins_loses, player_one_history, player_two_history);
 	}
 	else if (check_turn == "player_one") {
-		std::cout << "[ System Message ] [ Player One has won! ]" << std::endl;
+		system("CLS");
+		std::cout << "[ System Message ] [ Player One has won! ]" << std::endl << std::endl;
 		if (!two_player) {
 			save_game_history("player_one", comp_wins_loses, player_one_history, player_two_history);
 		}
 	}
 	else if (check_turn == "player_two") {
-		std::cout << "[ System Message ] [ Player Two has won! ]" << std::endl;
+		system("CLS");
+		std::cout << "[ System Message ] [ Player Two has won! ]" << std::endl << std::endl;
 	}
 }
 
+// Starts the game, calls a number of functions to carry
+// out functionality of the game.
 void GameClass::initialise_play(string set_turn, string username[2], bool _two_players) {
 	this->player_one_user = username[0];
 
@@ -183,7 +224,7 @@ void GameClass::initialise_play(string set_turn, string username[2], bool _two_p
 		if (set_turn == "player_computer" && this->two_players == false) {
 			Computer_Ai cp;
 			
-			cp.best_move(this->board_game, this->letter_array);
+			cp.best_move(this->board_game, this->letter_array, true);
 			this->board_game[cp.get_comp_row()][cp.get_comp_column()] = this->player_computer;
 			display_board();
 			cout << endl << "[ System Message ] [ Computer has played, Player_One's turn! ]" << endl << endl;
@@ -203,12 +244,16 @@ void GameClass::initialise_play(string set_turn, string username[2], bool _two_p
 				if (this->two_players == false) {
 					set_turn = "player_computer";
 				}
+				else {
+					set_turn = "player_two";
+				}
 
 				initialise_play(set_turn, username, this->two_players);
 			}
 
 			if (this->back_menu) {
 				this->back_menu = false;
+				system("CLS");
 				return;
 			}
 
@@ -233,6 +278,7 @@ void GameClass::initialise_play(string set_turn, string username[2], bool _two_p
 
 			if (this->back_menu) {
 				this->back_menu = false;
+				system("CLS");
 				return;
 			}
 
@@ -267,31 +313,41 @@ void GameClass::initialise_play(string set_turn, string username[2], bool _two_p
 	}
 }
 
+// Starts the game for dual ai game play.
 void GameClass::initialise_ai_play() {
 	string set_turn = "player_computer_one";
 
 	int positions_remaining = 0;
 
+	initialise_new_game();
+
+	this->player_computers_play = true;
+
+	display_board();
+
 	while (!is_game_over() && positions_remaining != 9) {
 		if (set_turn == "player_computer_one") {
 			Computer_Ai cp;
 
-			cp.best_move(this->board_game, this->letter_array);
+			cp.best_move(this->board_game, this->letter_array, true);
 			this->board_game[cp.get_comp_row()][cp.get_comp_column()] = this->player_computer;
-			display_board();
-			cout << endl << "[ System Message ] [ Computer has played, Player_One's turn! ]" << endl << endl;
+			this->pause = true;
 			positions_remaining++;
-			set_turn = "player_computer_two";
+			display_board();
+			
+			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 		else {
 			Computer_Ai cp;
 
-			cp.best_move(this->board_game, this->letter_array);
-			this->board_game[cp.get_comp_row()][cp.get_comp_column()] = this->player_computer;
-			display_board();
-			cout << endl << "[ System Message ] [ Computer has played, Player_One's turn! ]" << endl << endl;
+			cp.best_move(this->board_game, this->letter_array, true);
+			this->board_game[cp.get_comp_row()][cp.get_comp_column()] = this->player_computer_two;
+			this->pause = false;
 			positions_remaining++;
-			set_turn = "player_computer one";
+			display_board();
+
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+
 		}
 
 		if (!is_game_over() && positions_remaining == 9) {
@@ -300,23 +356,18 @@ void GameClass::initialise_ai_play() {
 		else {
 			if (set_turn == "player_computer_one") {
 				set_turn = "player_computer_two";
-			}
-			else if (set_turn == "player_one") {
-				if (this->two_players == false) {
-					set_turn = "player_computer";
-				}
-				else {
-					set_turn = "player_two";
-				}
-			}
-			else if (set_turn == "player_two" && this->two_players == true) {
-				set_turn = "player_one";
+			} else {
+				set_turn = "player_computer_one";
 			}
 
 		}
 	}
+
+	this->player_computers_play = false;
 }
 
+// Initialises the game board, by placing the letters in
+// their correct order into a two dimenisional array.
 void GameClass::initialise_new_game() {
 	int array_traversed = 0;
 	for (int i = 0; i < 3; i++) {
@@ -327,6 +378,8 @@ void GameClass::initialise_new_game() {
 	}
 }
 
+// Saves the wins and loses of computer and both players
+// into their own files.
 void GameClass::save_game_history(string winner, int comp_wins_loses[2], int player_one_history[2], int player_two_history[2]) {
 	ofstream of;
 
@@ -399,10 +452,12 @@ void GameClass::save_game_history(string winner, int comp_wins_loses[2], int pla
 	
 }
 
+// Checks if the game is over.
 bool GameClass::is_game_over() {
 	return(row_traversed(this->board_game) || column_traversed(this->board_game) || diagonal_traversed(this->board_game));
 }
 
+// Finds and checks for possible wins in each row.
 bool GameClass::row_traversed(char board_game[][3]) {
 	for (int i = 0; i < 3; i++) {
 		if ((this->board_game[i][0] == this->board_game[i][1]) &&
@@ -415,6 +470,7 @@ bool GameClass::row_traversed(char board_game[][3]) {
 	return false;
 }
 
+// Finds and checks for possible wins in each column.
 bool GameClass::column_traversed(char board_game[][3]) {
 	for (int i = 0; i < 3; i++) {
 		if ((this->board_game[0][i] == this->board_game[1][i]) &&
@@ -427,6 +483,7 @@ bool GameClass::column_traversed(char board_game[][3]) {
 	return false;
 }
 
+// Finds and checks for possible wins in each diagonal axis.
 bool GameClass::diagonal_traversed(char board_game[][3]) {
 	if ((this->board_game[0][0] == this->board_game[1][1]) &&
 		(this->board_game[1][1] == this->board_game[2][2]) &&

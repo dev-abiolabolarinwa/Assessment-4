@@ -15,7 +15,6 @@ using namespace std;
 void display_menu();
 void display_menu_one();
 void display_game_menu_one(int number);
-void display_game_menu_two();
 void display_game_history();
 
 bool exit_game = true;
@@ -39,6 +38,7 @@ int main() {
 		if (!::determine_players) {
 			if (::both_comp) {
 				new_game.initialise_ai_play();
+				
 			}
 			else {
 				new_game.initialise_play("player_computer", ::player_user, ::determine_players);
@@ -51,6 +51,7 @@ int main() {
 	} 
 }
 
+// Prints Main menu, that asks for player input.
 void display_menu() {
 	int menu_selector;
 
@@ -91,8 +92,10 @@ void display_menu() {
 	}
 }
 
+// Prints menu and asks player for input, returns
+// new function depending on players input.
 void display_menu_one() {
-	int menu_selector;
+	char menu_selector;
 
 	std::cout << std::endl << "TIC TAC TOE - New Game Menu" << std::endl << std::endl;
 	std::cout << "1. Player_one vs Computer_ai" << std::endl;
@@ -102,16 +105,16 @@ void display_menu_one() {
 	std::cout << "Please select one of the options above (1 -3): ";
 
 	std::cin >> menu_selector;
-
+		
 	while (!std::cin) {
 		std::cin.clear();
 		std::cin.ignore(100, '\n');
 		std::cout << "[ System Message ] [ Please enter a letter from 1 - 3 ]" << std::endl << std::endl;
 		std::cout << "Please select one of the following conditions from 1 - 3 that have not been selected: ";
 		std::cin >> menu_selector;
-	}
+	}	
 
-	if (menu_selector == 1) {
+	if (menu_selector == '1') {
 		::determine_players = false;
 
 		std::cin.clear();
@@ -119,22 +122,20 @@ void display_menu_one() {
 		display_game_menu_one(1);
 		return;
 	}
-	else if (menu_selector == 2) {
+	else if (menu_selector == '2') {
 		::determine_players = true;
-		std::cin.clear();
-		std::cin.ignore(100, '\n');
+		system("CLS");
 		display_game_menu_one(1);
-		std::cin.clear();
-		std::cin.ignore(100, '\n');
+		system("CLS");
 		display_game_menu_one(2);
 		std::cout << std::endl;
 		return;
 	}
-	else if (menu_selector == 3) {
+	else if (menu_selector == '3') {
 		::both_comp = true;
 		return;
 	}
-	else if (menu_selector == 4) {
+	else if (menu_selector == '4') {
 		display_menu();
 	}
 	else {
@@ -143,15 +144,14 @@ void display_menu_one() {
 	}
 }
 
+// Gets Users Username and creates a new file.
 void display_game_menu_one(int number) {
 	ofstream ofs;
 	ifstream ifs;
 	std::string username;
 
-	system("CLS");
-
 	if (number == 1) {
-		std::cout << "Please enter the Player_One's Initials of length 3: ";
+		std::cout << "Please enter the Player_One's Initials of length 3: ";		
 	}
 	else if (number == 2) {
 		std::cout << "Please enter the Player_Two's Initials of length 3: ";
@@ -171,22 +171,23 @@ void display_game_menu_one(int number) {
 
 	ifs.open("player_history.txt", std::ifstream::binary);
 
-	int length = 0;
+	int length_get;
 	string* users;
 
 	if (ifs.is_open()) {
 		ifs.seekg(0, ifs.end);
-		length = ifs.tellg();
+		std::streamoff length = ifs.tellg();
+		length_get = (int)length;
 		ifs.seekg(0, ifs.beg);
 	}
 	else {
-		length = 0;
+		length_get = 0;
 		return;
 	}
 
-	users = new string[length];
+	users = new string[length_get];
 
-	for (int i = 0; i < length; i++) {
+	for (int i = 0; i < length_get; i++) {
 		ifs >> users[i];
 
 		if (users[i] == "") {
@@ -229,14 +230,14 @@ void display_game_menu_one(int number) {
 
 
 		}
+		else {
+			display_game_menu_one(number);
+		}
 	}
 	std::cout << std::endl;
 }
 
-void display_game_menu_two() {
-
-}
-
+// Prints Player Game History.
 void display_game_history() {
 	ifstream ifs;
 
@@ -247,7 +248,7 @@ void display_game_history() {
 
 	if (ifs.is_open()) {
 		ifs.seekg(0, ifs.end);
-		length = ifs.tellg();
+		length = (int) ifs.tellg();
 		ifs.seekg(0, ifs.beg);
 	}
 	else {

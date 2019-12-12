@@ -10,11 +10,13 @@ class GameClass {
 		std::string player_two_user;
 
 		bool restart = false;
+		bool pause = false;
 		bool back_menu = false;
+		bool player_computers_play = false;
 
 		bool two_players = false;
 
-		char player_computer;
+		char player_computer, player_computer_two;
 
 		char board_game[3][3];
 		char letter_array[9] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
